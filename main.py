@@ -1,7 +1,9 @@
+from time import sleep
+
 from pprint import pprint
 
 import httplib2
-import apiclient.discovery
+from googleapiclient import discovery
 from oauth2client.service_account import ServiceAccountCredentials
 
 CREDENTIALS_FILE = 'creds.json'
@@ -12,8 +14,38 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
     ['https://www.googleapis.com/auth/spreadsheets',
      'https://www.googleapis.com/auth/drive'])
 httpAuth = credentials.authorize(httplib2.Http())
-service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)
+service = discovery.build('sheets', 'v4', http=httpAuth)
+
+source_spreadsheet_id = '1LTejK-Oo7L1bFreBIIcEZnF1W1RCC1s_jos3EuIP0jI'
+
+"""  copyTO()
+target_spreadsheet_id = spreadsheet_id
+sheet_id = 0
+request = service.spreadsheets().sheets().copyTo(
+    spreadsheetId=source_spreadsheet_id,
+    sheetId=sheet_id,
+    body={'destinationSpreadsheetId': target_spreadsheet_id}
+)"""
+
+
+def spreadsheet_id_update(source_spreadsheet_id, spreadsheet_id):
+    values = service.spreadsheets().values().get(
+        spreadsheetId=source_spreadsheet_id,
+        majorDimension='ROWS',
+        range='Лист1'
+    ).execute()
+    service.spreadsheets().values().batchUpdate(
+        spreadsheetId=spreadsheet_id,
+        body={
+            "valueInputOption": "USER_ENTERED",
+            "data": values
+        }
+    ).execute()
 
 
 if __name__ == "__main__":
-    pass
+    while True:
+        spreadsheet_id_update(source_spreadsheet_id, spreadsheet_id)
+        sleep(2)
+
+
