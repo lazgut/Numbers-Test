@@ -30,22 +30,27 @@ request = service.spreadsheets().sheets().copyTo(
 
 def spreadsheet_id_update(source_spreadsheet_id, spreadsheet_id):
     values = service.spreadsheets().values().get(
-        spreadsheetId=source_spreadsheet_id,
+        spreadsheetId=spreadsheet_id,
         majorDimension='ROWS',
-        range='Лист1'
+        range='Лист4'
     ).execute()
-    service.spreadsheets().values().batchUpdate(
+    pprint(values)
+    values_tmp = service.spreadsheets().values().batchUpdate(
         spreadsheetId=spreadsheet_id,
         body={
             "valueInputOption": "USER_ENTERED",
-            "data": values
+            "data": [
+                {"range": "Лист1!A1:D51",
+                 "majorDimension": "ROWS",
+                 "values": [item for item in values['values']]
+                 }
+            ]
         }
     ).execute()
+    pprint(values_tmp)
 
 
 if __name__ == "__main__":
     while True:
         spreadsheet_id_update(source_spreadsheet_id, spreadsheet_id)
-        sleep(2)
-
-
+        sleep(1)
