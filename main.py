@@ -59,8 +59,11 @@ def dollar_ruble(date: list) -> float:
     return float(rubles['ValCurs']['Valute'][10]['Value'].replace(',', '.'))
 
 
-if __name__ == "__main__":
+def main():
     while True:
         spreadsheet_id_update(spreadsheet_id)
         sleep(1)
 
+
+if __name__ == "__main__":
+    main()
