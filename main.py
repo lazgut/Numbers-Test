@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from time import sleep
 
 import httplib2
@@ -9,6 +11,11 @@ import xmltodict
 import urllib.request
 
 import pandas as pd
+
+import psycopg2
+from config import host, port, user, password, db_name
+from sqlalchemy import create_engine
+
 
 CREDENTIALS_FILE = 'creds.json'
 spreadsheet_id = '1inELIBAkvAozqu8oSu_6O9vACC9LpcR6k8RT5pzTKYA'
@@ -34,7 +41,7 @@ def spreadsheet_id_append(source_spreadsheet_id: str):
     df_values["стоимость в руб."] = [float(df_values['стоимость,$'][i]) *
                                      dollar_ruble(list(df_values['срок поставки'][i].split('.'))) for i
                                      in range(len(df_values))]
-    return [df_values.columns.tolist()] + df_values.values.tolist()
+    return df_values
 
 
 def spreadsheet_id_update(spreadsheet_id):
@@ -45,7 +52,7 @@ def spreadsheet_id_update(spreadsheet_id):
             "data": [
                 {"range": "Лист1",
                  "majorDimension": "ROWS",
-                 "values": [item for item in spreadsheet_id_append(spreadsheet_id)]
+                 "values": [item for item in [spreadsheet_id_append(spreadsheet_id).columns.tolist()] + spreadsheet_id_append(spreadsheet_id).values.tolist()]
                  }
             ]
         }
@@ -62,7 +69,37 @@ def dollar_ruble(date: list) -> float:
 def main():
     while True:
         spreadsheet_id_update(spreadsheet_id)
+        DataFrame_to_PostgreSQL(spreadsheet_id_append(spreadsheet_id))
         sleep(1)
+
+
+def DataFrame_to_PostgreSQL(df_values):
+    try:
+        connection = psycopg2.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=db_name
+        )
+        connection.autocommit = True
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT version();"
+            )
+
+            print(f"Server version: {cursor.fetchone()}")
+
+        engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db_name}')
+        df_values.to_sql('numbers_test', con=engine, if_exists='replace', index=False), engine.execute(f"SELECT * FROM numbers_test").fetchall()
+
+    except Exception as _ex:
+        print("[INFO] Error while working with PostgreSQL", _ex)
+    finally:
+        if connection:
+            connection.close()
+
+            print("[INFO] PostgreSQL connection closed")
 
 
 if __name__ == "__main__":
