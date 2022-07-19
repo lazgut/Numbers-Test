@@ -64,13 +64,6 @@ def dollar_ruble(date: list) -> float:  # Возвращаем курс долл
     return float(rubles['ValCurs']['Valute'][10]['Value'].replace(',', '.'))
 
 
-def main():  # Моя основная логика программы
-    while True:
-        spreadsheet_id_update(source_spreadsheet_id, spreadsheet_id)
-        dataframe_to_postgresql(spreadsheet_id_append(spreadsheet_id))
-        sleep(1)
-
-
 def dataframe_to_postgresql(df_values):  # Записываем DataFrame в таблицу postgresql
     try:
         connection = psycopg2.connect(
@@ -98,6 +91,13 @@ def dataframe_to_postgresql(df_values):  # Записываем DataFrame в т�
             connection.close()
 
             print("[INFO] PostgreSQL connection closed")
+
+
+def main():  # Моя основная логика программы
+    while True:
+        spreadsheet_id_update(source_spreadsheet_id, spreadsheet_id)
+        dataframe_to_postgresql(spreadsheet_id_append(spreadsheet_id))
+        sleep(1)
 
 
 if __name__ == "__main__":
