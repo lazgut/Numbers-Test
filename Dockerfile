@@ -8,6 +8,6 @@ RUN python -m venv venv
 
 RUN . ./venv/bin/activate
 
-RUN pip install --user [libs]
+RUN pip install --user httplib2 google-api-python-client oauth2client pandas xmltodict sqlalchemy psycopg2
 
-CMD ["python", "run.py"]
+CMD ["python", "main.py"]

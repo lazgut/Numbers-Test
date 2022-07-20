@@ -25,7 +25,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
 httpAuth = credentials.authorize(httplib2.Http())
 service = discovery.build('sheets', 'v4', http=httpAuth)
 
-source_spreadsheet_id = '1LTejK-Oo7L1bFreBIIcEZnF1W1RCC1s_jos3EuIP0jI'
+source_spreadsheet_id = '1f-qZEX1k_3nj5cahOzntYAnvO4ignbyesVO7yuBdv_g'
 
 
 def spreadsheet_id_append(source_spreadsheet_id: str):  # Читаем таблицу из тестового задания, добавляем в неё нужную колонку и возвращаем DataFrame для дальнейшей работы
