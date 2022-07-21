@@ -1,0 +1,18 @@
+version: "4.10.1"
+services:
+  postgres:
+    image: postgres:14.4
+    environment:
+      POSTGRES_DB: "Numbers Test"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "artur1998"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  client:
+    build: .
+    network_mode: host
+    depends_on:
+      - postgres

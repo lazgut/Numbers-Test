@@ -10,3 +10,8 @@ pp install sqlalchemy
 pip install psycopg2
 
 для PostgreSQL - config.py
+
+Для запуска можно просто запустить файл docker-compose
+Для проверки таблицы в контейнере Postgresql введите ы SLI:
+psql -U postgres -d 'Numbers Test'
+SELECT * FROM numbers_test;
